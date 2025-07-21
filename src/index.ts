@@ -4,13 +4,13 @@ app.use(express.json());
 const port = 3000;
 
 const db = {
-  video: [
-    { prevue: 'firstVideo', id: 1, title: 'titleVIdeo_1' },
-    { prevue: 'secondVideo', id: 2, title: 'titleVIdeo_2' },
-    { prevue: 'thirdideo', id: 3, title: 'titleVIdeo_3' },
-    { prevue: 'forthVideo', id: 4, title: 'titleVIdeo_4' },
-    { prevue: 'fiveVideo', id: 5, title: 'titleVIdeo_5' },
-    { prevue: 'sixVideo', id: 6, title: 'titleVIdeo_6' },
+  videos: [
+    { prevue: 'firstVideo', id: 1, title: 'angry birds' },
+    { prevue: 'secondVideo', id: 2, title: 'strong man' },
+    { prevue: 'thirdideo', id: 3, title: 'hello world' },
+    { prevue: 'forthVideo', id: 4, title: 'pinkman' },
+    { prevue: 'fiveVideo', id: 5, title: 'agent' },
+    { prevue: 'sixVideo', id: 6, title: 'mister bin' },
   ],
 };
 
@@ -19,13 +19,17 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.get('/videos', (req: Request, res: Response) => {
-  res.json(db.video);
+  if (req.query.title) {
+    const querryTitle = req.query.title.toString();
+    res.send(db.videos.filter((video) => video.title.includes(querryTitle)))
+  }
+  res.json(db.videos);
 });
 
 app.get('/videos/:id', (req: Request, res: Response) => {
   const videoId = req.params.id;
 
-  const foundVideo = db.video.find((video) => video.id === +videoId);
+  const foundVideo = db.videos.find((video) => video.id === +videoId);
   console.log(foundVideo, 'foundVideo');
 
   if (!foundVideo) {
@@ -45,7 +49,7 @@ app.post('/videos', (req: Request, res: Response) => {
     title: newTitle,
   };
 
-  db.video.push(newVideo);
+  db.videos.push(newVideo);
   res.send(201).json(newVideo);
 });
 
@@ -54,7 +58,7 @@ app.put('/videos/:id', (req: Request, res: Response) => {
   const videoTitle = req.body.title;
   const videoPrevue = req.body.prevue;
 
-  const foundVideo = db.video.find((video) => video.id === +videoId);
+  const foundVideo = db.videos.find((video) => video.id === +videoId);
 
   if (!foundVideo) {
     return res.send(404);
@@ -69,14 +73,14 @@ app.put('/videos/:id', (req: Request, res: Response) => {
 app.delete('/videos/:id', (req: Request, res: Response) => {
   const reqId = req.params.id;
 
-  const foundVideoIdx = db.video.findIndex((video) => video.id === +reqId);
+  const foundVideoIdx = db.videos.findIndex((video) => video.id === +reqId);
 
   if (foundVideoIdx === -1) {
     res.sendStatus(404);
     return;
   }
 
-  db.video.splice(foundVideoIdx, 1);
+  db.videos.splice(foundVideoIdx, 1);
   res.sendStatus(204);
 });
 
